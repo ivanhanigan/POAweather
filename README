@@ -1,0 +1,23 @@
+POA weather: meteorological data for Australian Postal Areas (Postcode approximations
+
+Abstract
+
+The dataset is Australia wide and includes Postal Area (POA) as at 2001 census (an approximation to Postcodes at that time), and derived daily temperature (av, max, min), rain and relative humidity from the Australian Bureau of Meteorology (BoM) stations.
+
+The spatial interpolation method was developed for NSW only and then applied nationally.   
+
+Methods development:
+
+Background: To explain the possible effects of exposure to weather conditions on population health outcomes, weather data need to be calculated at a level in space and time that is appropriate for the health data. There are various ways of estimating exposure values from raw data collected at weather stations but the rationale for using one technique rather than another; the significance of the difference in the values obtained; and the effect these have on a research question are factors often not explicitly considered. In this study we compare different techniques for allocating weather data observations to small geographical areas and different options for weighting averages of these observations when calculating estimates of daily precipitation and temperature for Australian Postal Areas. Options that weight observations based on distance from population centroids and population size are more computationally intensive but give estimates that conceptually are more closely related to the experience of the population.
+
+Results: Options based on values derived from sites internal to postal areas, or from nearest neighbour sites – that is, using proximity polygons around weather stations intersected with postal areas – tended to include fewer stations' observations in their estimates, and missing values were common. Options based on observations from stations within 50 kilometres radius of centroids and weighting of data by distance from centroids gave more complete estimates. Using the geographic centroid of the postal area gave estimates that differed slightly from the population weighted centroids and the population weighted average of sub-unit estimates.
+
+Conclusion: To calculate daily weather exposure values for analysis of health outcome data for small areas, the use of data from weather stations internal to the area only, or from neighbouring weather stations (allocated by the use of proximity polygons), is too limited. The most appropriate method conceptually is the use of weather data from sites within 50 kilometres radius of the area weighted to population centres, but a simpler acceptable option is to weight to the geographic centroid.
+
+Please see Related Publications "A comparison of methods for calculating population exposure estimates of daily weather for health research".
+
+Copyright 2011, The Australian National University. All rights reserved. Copyright Commonwealth of Australia 2005, Bureau of Meteorology. All rights reserved. ABS Copyright Commonwealth of Australia 2001, Australian Bureau of Statistics Census data is licensed under a Creative Commons Attribution 2.5 Australia licence. All rights reserved.
+
+Bibliographic Citation
+
+Hanigan I, Hall G, Dear KBG. “A comparison of methods for calculating population exposure estimates of daily weather for health research. International Journal of Health Geographics 2006;5(38).” [Computer file]. Canberra: Australian Data Archive, The Australian National University, 2011. 
