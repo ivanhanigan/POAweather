@@ -1,0 +1,26 @@
+\documentclass[a4paper]{article}   
+\usepackage{cite} 
+\usepackage{hyperref} 
+\usepackage{longtable} 
+\usepackage{rotating}
+\begin{document}
+\title{POAWEATHER} 
+\author{Ivan C. Hanigan$^{1}$}
+\date{\today}                 
+\maketitle
+\begin{itemize}
+\item [$^1$] National Centre for Epidemiology and Population Health, \\Australian National University.
+\end{itemize}
+
+\setcounter{page}{1}
+\pagenumbering{roman}
+\tableofcontents 
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+\section{Introduction}
+
+\clearpage
+
+
+\end{document}
