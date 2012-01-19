@@ -22,7 +22,7 @@
 
 \clearpage
 \subsection{POA}
-calculate the index for any type of ABS spatial unit at \href{http://www.abs.gov.au/AUSSTATS/abs@.nsf/DetailsPage/1259.0.30.0022006?OpenDocument}{this link}. 
+calculate the index for any type of ABS spatial unit at \href{http://www.abs.gov.au/AUSSTATS/abs@.nsf/DetailsPage/1259.0.30.0022006?OpenDocument}{this link} or \href{http://www.abs.gov.au/AUSSTATS/abs@.nsf/DetailsPage/2923.0.30.0012006?OpenDocument}{this other link}. 
 <<eval=FALSE,echo=FALSE,keep.source=TRUE>>=	
 ######################
 #data,  POA
