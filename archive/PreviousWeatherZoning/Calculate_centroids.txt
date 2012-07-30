@@ -1,0 +1,7 @@
+-- Wipe table of centroids, repopulate and display
+-- Byron Vickers 2011
+
+DROP TABLE public.act_centroids;
+SELECT sla_name, sla_code, ST_Centroid(the_geom) AS the_geom, gid INTO act_centroids
+	FROM abs_sla.actsla01;
+SELECT * FROM public.act_centroids

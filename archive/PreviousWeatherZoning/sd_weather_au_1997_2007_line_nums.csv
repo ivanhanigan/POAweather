@@ -1,0 +1,59 @@
+"sd_code";"sd_description";"count";"selected"
+105;"Sydney";2376;0
+110;"Hunter";2326;0
+115;"Illawarra";2342;0
+120;"Richmond-Tweed";2305;0
+125;"Mid-North Coast";2329;0
+130;"Northern";2329;0
+135;"North Western";2377;0
+140;"Central West";2388;0
+145;"South Eastern";2349;0
+150;"Murrumbidgee";2398;0
+155;"Murray";2396;0
+160;"Far West";2396;0
+205;"Melbourne";2377;0
+210;"Barwon";2376;0
+215;"Western District";2388;0
+220;"Central Highlands";2390;0
+225;"Wimmera";2379;0
+230;"Mallee";2396;0
+235;"Loddon";2382;0
+240;"Goulburn";2389;0
+245;"Ovens-Murray";2387;0
+250;"East Gippsland";2374;0
+255;"Gippsland";2385;0
+305;"Brisbane";2296;0
+310;"Moreton";2307;0
+315;"Wide Bay-Burnett";2054;0
+320;"Darling Downs";2304;0
+325;"South West";2399;0
+330;"Fitzroy";2226;0
+335;"Central West";2386;0
+340;"Mackay";2188;0
+345;"Northern";2202;0
+350;"Far North";2350;0
+355;"North West";2398;0
+405;"Adelaide                           ";2337;0
+410;"Outer Adelaide                     ";2326;0
+415;"Yorke and Lower North              ";2337;0
+420;"Murray Lands                       ";2387;0
+425;"South East                         ";2379;0
+430;"Eyre                               ";2397;0
+435;"Northern                           ";2406;0
+505;"Perth                              ";2388;0
+510;"South West                         ";2397;0
+515;"Lower Great Southern               ";2401;0
+520;"Upper Great Southern               ";2376;0
+525;"Midlands                           ";2385;0
+530;"South Eastern                      ";2405;0
+535;"Central                            ";2384;0
+540;"Pilbara                            ";2182;0
+545;"Kimberley                          ";2395;0
+605;"Greater Hobart";2369;0
+610;"Southern";2369;0
+615;"Northern";2358;0
+620;"Mersey-Lyell";2258;0
+705;"Darwin";2362;0
+710;"Northern Territory - Bal";2396;0
+805;"Canberra                           ";2349;0
+810;"Australian Capital Territory - Bal ";2385;0

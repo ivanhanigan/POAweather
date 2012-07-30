@@ -1,0 +1,22 @@
+-- Return the SD code, and list of max temperatures, vapour pressures and mean windspeeds in that SD over the selected year(s).
+-- takes ~700 sec to run from 1997 to 2007 inclusive
+-- Byron Vickers, 2012
+DROP TABLE sd_weather;
+SELECT AVG(maximum_temperature_in_24_hours_after_9am_local_time_in_degrees) AS maxt, AVG(average_daily_vapour_pressure_in_hpa) AS vpres, AVG(mean_daily_wind_speed_in_km_h) AS wndspd, AVG(global_solar_exposure_at_location_derived_from_satellite_data_i), sd_code, date, sd_description
+  INTO sd_weather
+  FROM sd_nearest_stations_au as stat INNER JOIN 
+    ( SELECT station_number,maximum_temperature_in_24_hours_after_9am_local_time_in_degrees, mean_daily_wind_speed_in_km_h, average_daily_vapour_pressure_in_hpa, global_solar_exposure_at_location_derived_from_satellite_data_i, date
+        FROM weather_bom.bom_daily_data_1990_2010
+        WHERE quality_of_maximum_temperature_in_24_hours_after_9am_local_time = 'Y'
+          AND quality_of_mean_daily_wind_speed = 'Y'
+          AND quality_of_daily_vapour_pressure = 'Y'
+          AND quality_of_global_solar_exposure_value = 'Y'
+          AND date BETWEEN '1997-01-01' AND '2007-12-31'
+    ) as weather	
+  ON weather.station_number = stat.site
+  GROUP BY sd_code, date, sd_description
+  ORDER BY sd_code, date;
+
+SELECT * FROM sd_weather;
+
+-- takes ~700 sec to run

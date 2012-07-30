@@ -1,0 +1,7 @@
+-- Get number of observations as well as name of SD for each SD
+-- Byron Vickers, 2012
+
+SELECT sd_code,sd_description,COUNT(maxt),0 AS selected
+FROM sd_weather
+GROUP BY sd_code,sd_description
+ORDER BY sd_code

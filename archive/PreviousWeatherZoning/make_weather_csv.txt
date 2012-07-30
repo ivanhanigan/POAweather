@@ -1,0 +1,3 @@
+-- takes 20 sec to run from 1997 to 2007 inclusive
+-- there are a few NULL maxt values, somehow. Occur on line 125216 and then a couple a few lines later.
+SELECT maxt,vpres,wndspd,avg AS slr_rad,sd_code,DATE_PART('year',date) AS year,DATE_PART('doy',date) AS day_of_year FROM sd_weather;

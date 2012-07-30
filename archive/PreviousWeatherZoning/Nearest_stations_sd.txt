@@ -1,0 +1,27 @@
+-- Find nearest AWS met stations for each SD, put into table
+-- Byron Vickers, 2012
+
+
+--DROP FUNCTION select_nearest_weather_stations();
+--DELETE FROM sd_nearest_stations_au;
+CREATE FUNCTION select_nearest_weather_stations() RETURNS integer AS $$
+DECLARE
+  curr_record RECORD;
+BEGIN
+  FOR curr_record IN (SELECT sd_code FROM public.sd_centroids_au) LOOP
+    EXECUTE 'INSERT INTO sd_nearest_stations_au
+      SELECT ST_Distance(sdtab.the_geom,bomtab.the_geom) AS distance, sdtab.sd_code, sdtab.sd_name AS sd_description, 
+        bomtab.site, bomtab.site_name
+      FROM public.sd_centroids_au AS sdtab, weather_bom.bom_stations_20091101 AS bomtab   
+      WHERE sdtab.sd_code = ' || quote_literal(curr_record.sd_code) || '
+        AND bomtab.aws_start < 1990
+        AND (bomtab.aws_end IS NULL OR bomtab.aws_end > 2007)
+      ORDER BY ST_Distance(sdtab.the_geom,bomtab.the_geom) 
+      LIMIT 3';
+  END LOOP;
+  
+  RETURN 1;
+END;
+$$ LANGUAGE 'plpgsql';
+
+SELECT * FROM select_nearest_weather_stations();

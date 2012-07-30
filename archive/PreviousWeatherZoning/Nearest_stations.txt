@@ -1,0 +1,16 @@
+-- Query to select 10 nearest met stations to centroid of SLA.
+-- Selects only those which are Automatic Weather Stations in the chosen year (2009 in below case)
+-- Use abs_sla.actsla01 instead of public.act_centroids to get closest distance to SLA rather than to centroid
+-- Byron Vickers 2011
+
+DROP TABLE nearest_stations;
+SELECT ST_Distance(g1.the_geom,g2.the_geom) AS dist, g1.gid AS gref_gid, g1.sla_name AS gref_description, g2.gid AS gnn_gid, 
+        g2.site, g2.site_name AS gnn_description, g2.long, g2.lat
+    INTO nearest_stations
+    FROM public.act_centroids AS g1, weather_bom.bom_stations_20091101 AS g2   
+    WHERE g1.gid = 1  
+      AND g2.aws_start < 2009
+      AND (g2.aws_end IS NULL OR g2.aws_end > 2009)
+    ORDER BY ST_Distance(g1.the_geom,g2.the_geom) 
+    LIMIT 10;
+SELECT * FROM nearest_stations;

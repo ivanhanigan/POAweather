@@ -1,0 +1,32 @@
+-- Make table of statistical division centroids. Ignores "offshore and migratory area" SDs (code 85 for each state), as well as any SDs with code 0 (not sure why these are in the original data, but they were polluting the dataset).
+-- Byron Vickers 2012
+
+DROP TABLE public.sd_centroids_au;
+SELECT sd_name, sd_code, ST_Centroid(the_geom) AS the_geom
+	INTO sd_centroids_au
+	FROM abs_sd.actsd01
+UNION ALL
+SELECT sd_name, sd_code, ST_Centroid(the_geom) AS the_geom
+	FROM abs_sd.nswsd01
+UNION ALL
+SELECT sd_name, sd_code, ST_Centroid(the_geom) AS the_geom
+	FROM abs_sd.ntsd01
+UNION ALL
+SELECT sd_name, sd_code, ST_Centroid(the_geom) AS the_geom
+	FROM abs_sd.qldsd01
+UNION ALL
+SELECT sd_name, sd_code, ST_Centroid(the_geom) AS the_geom
+	FROM abs_sd.sasd01
+UNION ALL
+SELECT sd_name, sd_code, ST_Centroid(the_geom) AS the_geom
+	FROM abs_sd.tassd01
+UNION ALL
+SELECT sd_name, sd_code, ST_Centroid(the_geom) AS the_geom
+	FROM abs_sd.vicsd01
+UNION ALL
+SELECT sd_name, sd_code, ST_Centroid(the_geom) AS the_geom
+	FROM abs_sd.wasd01;
+DELETE FROM public.sd_centroids_au WHERE (sd_code = 0 OR sd_code IS NULL OR sd_code % 100 = 85);
+ALTER TABLE public.sd_centroids_au
+  ADD PRIMARY KEY (sd_code);
+SELECT * FROM public.sd_centroids_au;
