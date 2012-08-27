@@ -13,6 +13,8 @@ source('src/postIDW.r')
 # do
 ch <- connect2postgres(hostip='pdb2.anu.edu.au',db='gislibrary',user='gislibrary',p='gislibrary')
 # enter password at console
+# change for demo
+dbSendQuery(ch,"ALTER USER student1 WITH PASSWORD 'horsebatterycorrectstaple'")
 
 dbGetQuery(ch,
            'select * from weather_bom.combstats limit 1')
@@ -42,9 +44,17 @@ actslaweather <- dbGetQuery(ch,
           group by t1.sla_name, t1.sla_code, cast(year || '-' || month || '-' || day as date)
                             ")
 
+# clean
 str(actslaweather)
 head(actslaweather)
-table(actslaweather$sla_name)
+slas <- names(table(actslaweather$sla_name))
+
 with(subset(actslaweather, sla_name == 'Kaleen'),
-     plot(date, avtemp, type = 'b')
+     plot(date, avtemp, type = 'l')
 )
+for(i in 1:length(slas)){
+  with(subset(actslaweather, sla_name == slas[i]),
+       lines(date, avtemp,col=i)
+  )  
+}
+
