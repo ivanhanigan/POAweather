@@ -1,0 +1,90 @@
+#+TITLE:POAweather overview 
+#+AUTHOR: Ivan Hanigan
+#+email: ivan.hanigan@anu.edu.au
+#+LaTeX_CLASS: article
+#+LaTeX_CLASS_OPTIONS: [a4paper]
+-----
+
+* Introduction
+This is the data related to Hanigan I, Hall G, Dear KBG. A comparison
+of methods for calculating population exposure estimates of daily
+weather for health research. International Journal of Health
+Geographics 2006;5(38) DOI: 10.1186/1476-072X-5-38
+* Data
+** Zones
+*** uploading the data requires generating the psql code
+#+name:upload POA-grouped-climate-zones
+#+begin_src R :session *R* :tangle src/upload POA-grouped-climate-zones.r :exports none :eval no
+  #######################################################################
+  # name: upload POA-grouped-climate-zones
+  # func
+  
+  shp2pgisBAT=function(infile,d='postgis',u='postgres',host='localhost',srid=4283,schema='public',
+   pgutils = 'C:\\pgutils\\'){
+          cat(paste("\"",pgutils,"shp2pgsql\" -s ",srid," -D %1.shp ",schema,".%1 > %1.sql",sep=""),"\n")
+          cat(paste("\"",pgutils,"psql\"  -d ",d," -U ",u," -W -h ",host," -f %1.sql",sep=""),"\n")
+          cat('make doshp.bat\n\n')
+          cat(paste("doshp.bat ",infile,sep=""))
+      cat(paste("\n\nCREATE INDEX idx_",infile,"_the_geom ON ",schema,".",infile," USING gist(the_geom);\n",sep=""))
+      cat(paste("VACUUM ANALYZE ",schema,".",infile,";\n",sep=""))
+      
+          cat(paste("CREATE INDEX \"",infile,"_gist\"
+          ON ",schema,".",infile,"
+          USING gist
+          (the_geom);
+          ALTER TABLE ",schema,".",infile," CLUSTER ON \"",infile,"_gist\";\n",sep=""))
+  
+                  
+          if (srid!=4283){                     
+                  cat(
+                  sprintf("SELECT AddGeometryColumn('%s','%s','gda94_geom',4283,'MULTIPOLYGON',2);
+                  ALTER TABLE %s.\"%s\" DROP CONSTRAINT enforce_geotype_gda94_geom;
+                  UPDATE %s.\"%s\" SET gda94_geom=ST_Transform(the_geom,4283);",
+                  tolower(schema),tolower(infile),tolower(schema),tolower(infile),tolower(schema),tolower(infile))
+                  )                     
+          }
+  
+          
+          }
+  
+  # load asgc
+  rootdir="M:/Climate_Data/Projects/GE_CLIM/3_Meteorology/districts"
+  
+ # dir("i:/tools")
+ # source("i:/tools/load2postgres.R")
+  ls()
+  
+  db='geodb'
+  uid='geouser'
+  hoster='130.56.60.77'
+  grant2='public'
+  sch='public'
+  # srid?
+  ## SELECT srid, auth_name, auth_srid, srtext, proj4text
+  ##   FROM spatial_ref_sys
+  ##   where srtext like '%Albers%';
+  srid = 3577
+  #2001
+  shp2pgisBAT(infile="POA01_METDIST_FINAL_DISSOLVE",d=db,u=uid,host=hoster,
+  srid=4283,schema=sch)
+  
+  # sqlQuery(ch,"comment on table abs_geography.auspoa01 is 'ABS Postal Areas 2001'") 
+  
+  
+#+end_src
+*** then do the generated code from a terminal
+#+name:shp2pgis bat
+#+begin_src R :session *R* :tangle src/shp2pgis bat.r :exports none :eval no
+#######################################################################
+# name: shp2pgis bat
+"C:\pgutils\shp2pgsql" -s 3577 -D %1.shp public.%1 > %1.sql 
+"C:\pgutils\psql"  -d geodb -U geouser -W -h 130.56.60.77 -f %1.sql 
+#make doshp.bat
+
+# doshp.bat POA01_METDIST_FINAL_DISSOLVE
+#+end_src
+*** now follow the geosever instructions
+http://docs.geoserver.org/stable/en/user/gettingstarted/postgis-quickstart/index.html
+
+** Weather
+
