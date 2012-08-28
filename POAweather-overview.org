@@ -12,7 +12,8 @@ weather for health research. International Journal of Health
 Geographics 2006;5(38) DOI: 10.1186/1476-072X-5-38
 * Data
 ** Zones
-*** uploading the data requires generating the psql code
+*** original in albers
+**** uploading the data requires generating the psql code
 #+name:upload POA-grouped-climate-zones
 #+begin_src R :session *R* :tangle src/upload POA-grouped-climate-zones.r :exports none :eval no
   #######################################################################
@@ -72,7 +73,7 @@ Geographics 2006;5(38) DOI: 10.1186/1476-072X-5-38
   
   
 #+end_src
-*** then do the generated code from a terminal
+**** then do the generated code from a terminal
 #+name:shp2pgis bat
 #+begin_src R :session *R* :tangle src/shp2pgis bat.r :exports none :eval no
 #######################################################################
@@ -83,8 +84,23 @@ Geographics 2006;5(38) DOI: 10.1186/1476-072X-5-38
 
 # doshp.bat POA01_METDIST_FINAL_DISSOLVE
 #+end_src
-*** now follow the geosever instructions
+**** now follow the geosever instructions
 http://docs.geoserver.org/stable/en/user/gettingstarted/postgis-quickstart/index.html
+
+*** got ArcGIS to reproject in GDA94
+**** upload using Linux
+#+name:shp2psql
+#+begin_src sh :session *shell2* :tangle src/shp2psql.r :exports none :eval yes
+################################################################
+# name:shp2psql
+cd ~/projects/POAweather/data/reprojected/
+shp2pgsql -s 4283 -D POA01_METDIST_FINAL_DISSOLVE_GDA94.shp public.POA01_METDIST_FINAL_DISSOLVE_GDA94 > POA01_METDIST_FINAL_DISSOLVE_GDA94.sql
+# psql -d geodb -U geouser -W -h 130.56.60.77 -f POA01_METDIST_FINAL_DISSOLVE_GDA94.sql
+# warning terminal not fully functional?  ran from normal terminal?
+# actually only worked on windows
+#+end_src
+
+#+RESULTS: shp2psql
 
 ** Weather
 
