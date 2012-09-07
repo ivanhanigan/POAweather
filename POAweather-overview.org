@@ -12,6 +12,7 @@ weather for health research. International Journal of Health
 Geographics 2006;5(38) DOI: 10.1186/1476-072X-5-38
 * Data
 ** Zones
+Upload to http://dc-geoserve.anu.edu.au:8081/geoserver
 *** original in albers
 **** uploading the data requires generating the psql code
 #+name:upload POA-grouped-climate-zones
