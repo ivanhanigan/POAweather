@@ -10,11 +10,16 @@ This is the data related to Hanigan I, Hall G, Dear KBG. A comparison
 of methods for calculating population exposure estimates of daily
 weather for health research. International Journal of Health
 Geographics 2006;5(38) DOI: 10.1186/1476-072X-5-38
+
+* Tools
+
 * Data
 ** Zones
 Upload to http://dc-geoserve.anu.edu.au:8081/geoserver
-*** original in albers
-**** uploading the data requires generating the psql code
+from M:/Climate_Data/Projects/GE_CLIM/3_Meteorology/districts
+*** poa grouped into climatic zones
+**** original in albers
+***** uploading the data requires generating the psql code
 #+name:upload POA-grouped-climate-zones
 #+begin_src R :session *R* :tangle src/upload POA-grouped-climate-zones.r :exports none :eval no
   #######################################################################
@@ -74,7 +79,7 @@ Upload to http://dc-geoserve.anu.edu.au:8081/geoserver
   
   
 #+end_src
-**** then do the generated code from a terminal
+***** then do the generated code from a terminal
 #+name:shp2pgis bat
 #+begin_src R :session *R* :tangle src/shp2pgis bat.r :exports none :eval no
 #######################################################################
@@ -85,11 +90,11 @@ Upload to http://dc-geoserve.anu.edu.au:8081/geoserver
 
 # doshp.bat POA01_METDIST_FINAL_DISSOLVE
 #+end_src
-**** now follow the geosever instructions
+***** now follow the geosever instructions
 http://docs.geoserver.org/stable/en/user/gettingstarted/postgis-quickstart/index.html
 
-*** got ArcGIS to reproject in GDA94
-**** upload using Linux
+**** got ArcGIS to reproject in GDA94
+***** upload using Linux
 #+name:shp2psql
 #+begin_src sh :session *shell2* :tangle src/shp2psql.r :exports none :eval yes
 ################################################################
@@ -102,6 +107,58 @@ shp2pgsql -s 4283 -D POA01_METDIST_FINAL_DISSOLVE_GDA94.shp public.POA01_METDIST
 #+end_src
 
 #+RESULTS: shp2psql
+***** realise need PDENS
+#+name:upload PDENS
+#+begin_src R :session *R* :tangle src/upload PDENS.r :exports none :eval no
+  ###########################################################################
+  # newnode: upload PDENS
+  require(ProjectTemplate)
+  source('~/tools/disentangle/src/connect2postgres.r')
+  source('~/tools/delphe-project/tools/fixGeom.r')
+  ch <- connect2postgres(hostip='130.56.60.77',db='geodb',user='geouser',p=NA)
+  
+  # load
+  load.project()
+  ls()
+  head(POA01.METDIST.FINAL.CCD.DISSOLVE)
+  names(POA01.METDIST.FINAL.CCD.DISSOLVE) <- tolower(names(POA01.METDIST.FINAL.CCD.DISSOLVE))
+  # do
+  dbWriteTable(ch,name='poa01_metdist_final_ccd_dissolve', value=POA01.METDIST.FINAL.CCD.DISSOLVE)
+  
+  dbGetQuery(ch,
+  "SELECT  t1.district, pdens, the_geom
+  into poa_grouped_into_climatic_regions
+  FROM
+    public.poa01_metdist_final_dissolve_gda94 t1
+  join
+    public.poa01_metdist_final_ccd_dissolve t2
+  on
+    t1.district =
+    t2.district;
+  alter table poa_grouped_into_climatic_regions add column gid serial
+  primary key")
+  
+#+end_src
 
+*** poa and weather stations
+#+name:poa and stn
+#+begin_src sh :session *shell* :tangle no :exports none :eval no
+###########################################################################
+# newnode: poa and stn
+# copy from J drive nceph datasets unres asgcshp
+cd ~/data/ASGCSHP/2001/POA/
+# shp2pgsql -s 4283 -D NSWPOA01.shp public.nswpoa01 > nswpoa01.sql
+# psql -d geodb -U geouser -W -h 130.56.60.77 -f nswpoa01.sql
+
+# DONT USE THE ALBERS PRJ ONE
+# shp2pgsql -s XXXX -D POA01_METDIST_FINAL.shp public.poa01_metdist_final > poa01_metdist_final.sql
+# psql -d pgisdb -U postgres -W -h 130.56.60.77 -f poa01_metdist_final.sql
+# warning terminal not fully functional?  ran from normal terminal
+
+#+end_src
+copy from M:/Climate_Data/Projects/GE_CLIM/3_Meteorology/bomsites
+cd ~/projects/POAweather/data
+ shp2pgsql -s 4283 -D AllDailyBoMSites0002_GDA94.shp public.alldailybomsites0002_gda94 > alldailybomsites0002_gda94.sql
+psql -d geodb -U geouser -W -h 130.56.60.77 -f alldailybomsites0002_gda94.sql
 ** Weather
 
