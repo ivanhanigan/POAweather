@@ -13,8 +13,6 @@ source('src/postIDW.r')
 # do
 ch <- connect2postgres(hostip='pdb2.anu.edu.au',db='gislibrary',user='gislibrary',p='gislibrary')
 # enter password at console
-# change for demo
-dbSendQuery(ch,"ALTER USER student1 WITH PASSWORD 'horsebatterycorrectstaple'")
 
 dbGetQuery(ch,
            'select * from weather_bom.combstats limit 1')
