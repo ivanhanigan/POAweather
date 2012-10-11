@@ -1,0 +1,122 @@
+% Created 2012-10-11 Thu 14:13
+\documentclass[a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{float}
+\providecommand{\alert}[1]{\textbf{#1}}
+
+\title{POAweather Ding 2012}
+\author{Ivan Hanigan}
+\date{\today}
+\hypersetup{
+  pdfkeywords={},
+  pdfsubject={},
+  pdfcreator={Emacs Org-mode version 7.8.11}}
+
+\begin{document}
+
+\maketitle
+
+% Org-mode is exporting headings to 3 levels.
+\tableofcontents
+\hrule
+\section{Intro}
+\label{sec-1}
+
+This is a data extraction from the POAweather project for Ning Ding, NCEPH staff member.
+\section{This document is an executable script}
+\label{sec-2}
+
+This document is produced from an R script that mixes computer code with narrative.
+
+The structure of this document follows the - \emph{Reichian load, clean, func, do} approach \href{http://stackoverflow.com/a/1434424}{http://stackoverflow.com/a/1434424} first put forward by Josh Reich.  
+The workflow is implemented here using the ProjectTemplate package \href{http://projecttemplate.net/}{http://projecttemplate.net/} by John Myles White.
+\section{Citation Requirements}
+\label{sec-3}
+
+Use of these data is open to all staff and students at NCEPH however do require the citations in the Reference list be cited in all publications.
+
+The POAweather project should be cited.  It is a combination of code and data produced from the original paper by Hanigan, Hall and Dear in 2006 \cite{Hanigan2006} which compared 5 simple methods for estimating exposure to weather variables for populations of small areas (postcodes).  The updated source codes are available from \cite{Hanigan2012d}.
+
+The source data are from the BoM \cite{NationalClimateCentreoftheBureauofMeteorology2010} and the ABS \cite{AustralianBureauofStatistics2006} and are hosted at the National Centre for Epidemiology and Population Health of The Australian National University  (using a PostgreSQL database \href{http://www.postgresql.org}{http://www.postgresql.org} with the PostGIS spatial extension \href{http://postgis.refractions.net}{http://postgis.refractions.net}).
+\section{Authorship Requirements}
+\label{sec-4}
+
+These data must only be used by projects that produce NCEPH output, i.e. authorship and/or grant funding where an NCEPH staff member is a major participant.
+\section{Statement of Compliance}
+\label{sec-5}
+
+
+
+\begin{center}
+\begin{tabular}{ll}
+ Details                                  &  User  \\
+\hline
+ Name:                                    &        \\
+ Organisation:                            &        \\
+ I agree to abide by these requirements:  &        \\
+ Date:                                    &        \\
+\hline
+\end{tabular}
+\end{center}
+\section{The Codes}
+\label{sec-6}
+\subsection{main.r}
+\label{sec-6-1}
+
+This file is used to run the load, clean, func and do modules.  It is found in the root of the project directory.
+\subsection{load.r}
+\label{sec-6-2}
+\subsection{clean.r}
+\label{sec-6-3}
+\subsection{func.r}
+\label{sec-6-4}
+\subsubsection{lib}
+\label{sec-6-4-1}
+\subsubsection{connect2postgres}
+\label{sec-6-4-2}
+\subsubsection{postIDW}
+\label{sec-6-4-3}
+\subsubsection{weathervars}
+\label{sec-6-4-4}
+\subsection{do.r}
+\label{sec-6-5}
+\subsubsection{do-prototype.r}
+\label{sec-6-5-1}
+\subsubsection{do-final-run}
+\label{sec-6-5-2}
+\section{Conclusion}
+\label{sec-7}
+
+
+\section{References}
+\begin{thebibliography}{1}
+
+\bibitem{Hanigan2006}
+Ivan Hanigan, Gillian Hall, and Keith Dear.
+\newblock {A comparison of methods for calculating population exposure
+  estimates of daily weather for health research.}
+\newblock {\em International journal of health geographics}, 5(1):38, 2006.
+
+\bibitem{Hanigan2012d}
+Ivan~C. Hanigan.
+\newblock {POAweather. [[https://github.com/ivanhanigan/POAweather][https://github.com/ivanhanigan/POAweather]]}, 2012.
+
+\bibitem{NationalClimateCentreoftheBureauofMeteorology2010}
+{National Climate Centre of the Bureau of Meteorology}.
+\newblock {\em {Daily or three hourly weather data for Bureau of Meteorology
+  stations.}}
+\newblock 700 Collins Street Docklands VIC 3008, AUSTRALIA;, 2010.
+
+\bibitem{AustralianBureauofStatistics2006}
+{Australian Bureau of Statistics}.
+\newblock {2923.0.30.001 - Census of Population and Housing: Census Geographic
+  Areas Digital Boundaries, Australia}.
+\newblock [[http://www.abs.gov.au/AUSSTATS/abs@.nsf/DetailsPage/2923.0.30.0012006?OpenDocument][http://www.abs.gov.au/AUSSTATS/abs@.nsf/DetailsPage/2923.0.30.0012006?OpenDocument]] 2006.
+
+
+\end{thebibliography}
+
+\end{document}

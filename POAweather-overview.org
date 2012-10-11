@@ -4,6 +4,12 @@
 #+LaTeX_CLASS: article
 #+LaTeX_CLASS_OPTIONS: [a4paper]
 -----
+#+name:date
+#+begin_src R :session *R* :tangle src/date.r :exports none :eval no
+  ###########################################################################
+  # newnode: date
+  Sys.Date()
+#+end_src
 
 * Introduction
 This is the data related to Hanigan I, Hall G, Dear KBG. A comparison
@@ -12,9 +18,13 @@ weather for health research. International Journal of Health
 Geographics 2006;5(38) DOI: 10.1186/1476-072X-5-38
 
 * Tools
+** postIDW
 
 * Data
-** Zones
+The source data for Hanigan 2006 are archived and this process is documented here.
+The data framework is revised for ongoing work for the SWISH-EWEDB project.  
+** Hanigan2006
+*** Zones
 Upload to http://dc-geoserve.anu.edu.au:8081/geoserver
 from M:/Climate_Data/Projects/GE_CLIM/3_Meteorology/districts
 *** poa grouped into climatic zones
@@ -160,5 +170,9 @@ copy from M:/Climate_Data/Projects/GE_CLIM/3_Meteorology/bomsites
 cd ~/projects/POAweather/data
  shp2pgsql -s 4283 -D AllDailyBoMSites0002_GDA94.shp public.alldailybomsites0002_gda94 > alldailybomsites0002_gda94.sql
 psql -d geodb -U geouser -W -h 130.56.60.77 -f alldailybomsites0002_gda94.sql
-** Weather
-
+*** Weather
+** EWEDB
+* New projects
+** Ding2012
+[[./reports/POAweather-Ding2012.org]]
+** Glass2012

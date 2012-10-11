@@ -1,0 +1,26 @@
+
+\documentclass[a4paper]{article}
+\title{POAweather references Bib}
+\author{Ivan Hanigan}
+\begin{document}
+\maketitle
+
+\setcounter{page}{1}
+\pagenumbering{roman}
+\tableofcontents 
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+\section{Method}
+The POAweather project is a data product from the original paper by Hanigan, Hall and Dear in 2006 \cite{Hanigan2006} which compared 5 simple methods for estimating exposure to weather variables for populations of small areas (postcodes).  The code is online at \cite{Hanigan2012d}.
+
+\section{Weather}
+The method is applied to the data from BoM \cite{NationalClimateCentreoftheBureauofMeteorology2010}
+
+\section{Postcodes}
+We use the Australian Bureau of Statistics (ABS) version of postcodes termed Postal Areas (POA) \cite{AustralianBureauofStatistics2006}.
+
+\bibliographystyle{unsrt}
+\bibliography{~/Dropbox/references/library.bib}
+
+\end{document}
