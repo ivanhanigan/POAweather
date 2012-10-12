@@ -1,0 +1,371 @@
+#+TITLE:POAweather Ding 2012 
+#+AUTHOR: Ivan Hanigan
+#+email: ivan.hanigan@anu.edu.au
+#+LaTeX_CLASS: article
+#+LaTeX_CLASS_OPTIONS: [a4paper]
+#+LATEX: \tableofcontents
+-----
+* COMMENT init
+#+name:setwd
+#+begin_src R :session *R* :tangle no :exports none :eval no
+  ###########################################################################
+  # newnode: setwd
+  setwd('..')
+#+end_src
+
+* Intro
+This is a data extraction from the POAweather project for Ning Ding, NCEPH staff member.
+
+* This document is an executable script
+This document is produced from an R script that mixes computer code with narrative.
+
+The structure of this document follows the - \emph{Reichian load, clean, func, do} approach http://stackoverflow.com/a/1434424 first put forward by Josh Reich.  
+The workflow is implemented here using the ProjectTemplate package http://projecttemplate.net/ by John Myles White.
+
+* Citation Requirements
+Use of these data is open to all staff and students at NCEPH however do require the citations in the Reference list be cited in all publications.
+
+The POAweather project should be cited.  It is a combination of code and data produced from the original paper by Hanigan, Hall and Dear in 2006 \cite{Hanigan2006} which compared 5 simple methods for estimating exposure to weather variables for populations of small areas (postcodes).  The updated source codes are available from \cite{Hanigan2012d}.
+
+The source data are from the BoM \cite{NationalClimateCentreoftheBureauofMeteorology2010} and the ABS \cite{AustralianBureauofStatistics2006} and are hosted at the National Centre for Epidemiology and Population Health of The Australian National University  (using a PostgreSQL database http://www.postgresql.org with the PostGIS spatial extension http://postgis.refractions.net).
+
+* Authorship Requirements
+These data must only be used by projects that produce NCEPH output, i.e. authorship and/or grant funding where an NCEPH staff member is a major participant.
+
+* Statement of Compliance
+
+| Details                                 | User |
+|-----------------------------------------+------|
+| Name:                                   |      |
+| Organisation:                           |      |
+| I agree to abide by these requirements: |      |
+| Date:                                   |      |
+|-----------------------------------------+------|
+
+* COMMENT The Codes
+** main.r
+This file is used to run the load, clean, func and do modules.  It is found in the root of the project directory.
+#+name:main-ding2012.r
+#+begin_src R :session *R* :tangle ../main-ding2012.r :exports none :eval no
+  ###########################################################################
+  # newnode: main-ding2012.r
+  require(ProjectTemplate)
+  load.project()
+  dir()
+  
+  source('src/func.r')
+  # instead of sourcing this file, open it view the prototype
+  # source('src/do-ding2012-prototype.r')
+  # source('src/do-ding2012-final-run.r')
+  
+#+end_src
+
+** load.r
+
+** clean.r
+
+** func.r
+*** lib
+#+name:lib
+#+begin_src R :session *R* :tangle ../src/lib.r :exports none :eval no
+###########################################################################
+# newnode: lib
+  if (!require(ProjectTemplate)) install.packages('ProjectTemplate', repos='http://cran.csiro.au'); require(ProjectTemplate)
+  if (!require(lubridate)) install.packages('lubridate', repos='http://cran.csiro.au'); require(lubridate)
+  if (!require(reshape)) install.packages('reshape', repos='http://cran.csiro.au'); require(reshape)
+  if (!require(plyr)) install.packages('plyr', repos='http://cran.csiro.au'); require(plyr)
+  if (!require(ggplot2)) install.packages('ggplot2', repos='http://cran.csiro.au'); require(ggplot2)
+
+#+end_src
+
+*** connect2postgres
+#+name:connect2postgres
+#+begin_src R :session *R* :tangle ../src/func.r :exports none :eval no
+###########################################################################
+# newnode: connect2postgres
+################ 
+source('src/connect2postgres.r')
+ch <- connect2postgres(hostip='130.56.102.41',db='delphe',user='student1')
+#+end_src
+*** postIDW
+#+name:postIDW
+#+begin_src R :session *R* :tangle ../src/func.r :exports none :eval no
+###########################################################################
+# newnode: postIDW
+##################
+source('src/postIDW.r')
+#+end_src
+
+*** weathervars
+#+name:weathervars
+#+begin_src R :session *R* :tangle ../src/func.r :exports none :eval no
+  ###########################################################################
+  # newnode: weathervars
+  weathervars <- matrix(c(
+     'average_daily_temperature_calculated_by_averaging_the_max_and_m',
+     'quality_of_average_daily_temperature_min_max_2_',
+     'maximum_temperature_in_24_hours_after_9am_local_time_in_degrees',
+     'quality_of_maximum_temperature_in_24_hours_after_9am_local_time',
+     'minimum_temperature_in_24_hours_before_9am_local_time_in_degree',
+     'quality_of_minimum_temperature_in_24_hours_before_9am_local_tim',
+     'average_daily_dew_point_temperature_in_degrees_c',
+     'quality_of_overall_dew_point_temperature_observations_used',
+     'precipitation_in_the_24_hours_before_9am_local_time_in_mm',
+     'quality_of_precipitation_value',
+     'mean_daily_wind_speed_in_km_h',
+     'quality_of_mean_daily_wind_speed'
+  ),ncol=2,byrow=T)
+  #weathervars
+#+end_src
+
+** do.r
+*** do-prototype.r
+#+name:do-prototype
+#+begin_src R :session *R* :tangle ../src/do-ding2012-prototype.r :exports none :eval no
+  ###########################################################################
+  # newnode: do-prototype
+  postIDW(vname="average_daily_temperature_calculated_by_averaging_the_max_and_min_temperatures_in_degrees_c",
+          param_name="avtemp")
+  # this uses the geographic centroid.  subsequent final run uses pop weighted centre
+  dbSendQuery(ch,
+  "select nswpoa.poa_2006,
+     st_centroid(nswpoa.the_geom)
+  into public.tempnswpoa06
+  from  abs_poa.nswpoa06 nswpoa;
+  alter table public.tempnswpoa06 add column gid2 serial primary key;
+  
+  ALTER TABLE public.tempnswpoa06 ALTER COLUMN st_centroid SET NOT NULL;
+  CREATE INDEX name_for_index2 on public.tempnswpoa06 using GIST(st_centroid);
+  ALTER TABLE public.tempnswpoa06 CLUSTER ON name_for_index2;
+  ")
+  
+  # --drop table public.tempnswpoa06stations;
+  dbSendQuery(ch,
+  "select nswpoa.poa_2006,
+  weather_bom.combstats.stnum,
+  st_distance(
+    weather_bom.combstats.the_geom,
+    nswpoa.st_centroid
+  ) as distances
+  into public.tempnswpoa06stations
+  from  (select * from public.tempnswpoa06) nswpoa,
+  weather_bom.combstats
+  where st_distance(
+  weather_bom.combstats.the_geom,
+   st_centroid
+  )<=0.5
+  order by poa_2006, distances;
+  
+  select *, st_buffer(st_centroid, 0.5) into public.tempbuffer from public.tempnswpoa06 where poa_2006 = '2000';
+  alter table public.tempbuffer add column gid3 serial primary key;
+  ")
+  
+  data <- dbGetQuery(ch,
+  "select t1.poa_2006,t1.poa_2006, cast(year || '-' || month || '-' || day as date) , count(station_number) as nostations,
+  sum(t2.precipitation_in_the_24_hours_before_9am_local_time_in_mm*(1/(t1.distances^2))) / sum(1/(t1.distances^2)) as rain
+  from public.tempnswpoa06stations as t1
+  join weather_bom.bom_daily_data_1990_2010 as t2
+  on t1.stnum=t2.station_number
+            where poa_2006 = '2000' and
+            (quality_of_precipitation_value = 'Y' or quality_of_precipitation_value = 'N') and
+            precipitation_in_the_24_hours_before_9am_local_time_in_mm is not null
+            group by t1.poa_2006, t1.poa_2006, cast(year || '-' || month || '-' || day as date)
+            order by date;
+  ")
+  with(data, plot(date, rain))
+
+  data2 <- dbGetQuery(ch,
+  "select t1.poa_2006,t1.poa_2006, cast(year || '-' || month || '-' || day as date) , station_number,
+  t2.precipitation_in_the_24_hours_before_9am_local_time_in_mm, quality_of_precipitation_value, distances
+  from public.tempnswpoa06stations as t1
+  join weather_bom.bom_daily_data_1990_2010 as t2
+  on t1.stnum=t2.station_number
+            where date = '2010-02-28' and year = 2010 and poa_2006 = '2000' and
+            precipitation_in_the_24_hours_before_9am_local_time_in_mm is not null
+            order by date;
+  ")
+  
+  # tidy up
+  dbSendQuery(ch,
+  "drop table public.tempnswpoa06;
+  drop table public.tempnswpoa06stations;
+  drop table public.tempbuffer;
+  ")
+  
+#+end_src
+*** do-final-run
+#+name:do-final-run
+#+begin_src R :session *R* :tangle ../src/do-ding2012-final-run.r :exports none :eval no
+  ###########################################################################
+  # newnode: do-final-run
+  # there is currently a problem with the NT (being fixed)
+  for(state in  c('nsw','vic','qld','sa','wa','tas','act')){
+  # state <- 'nsw'
+  dbSendQuery(ch,
+  paste(
+  "select t1.poa_code,
+  weather_bom.combstats.stnum,
+  st_distance(
+    weather_bom.combstats.the_geom,
+    t1.the_geom_centroids
+  ) as distances
+  into public.temp",state,"poa06stations
+  from abs_poa.",state,"poa06 t1,
+  weather_bom.combstats
+  where st_distance(
+  weather_bom.combstats.the_geom,
+   t1.the_geom_centroids
+  )<=0.75
+  order by poa_code, distances;
+  ",sep="")
+  )
+  
+  # add index to station number
+  dbSendQuery(ch,
+  paste('
+  create index "station_key" on public.temp',state,'poa06stations
+  using btree
+  (stnum);
+  alter table public.temp',state,'poa06stations cluster on "station_key";
+  ', sep = '')
+  )
+  
+  for(i in 1:nrow(weathervars)){
+    # i <- 1
+    wvar <- weathervars[i,1]
+    qvar <- weathervars[i,2]
+  print(wvar); print(qvar)
+   for(yy in 1990:2010){
+  #yy <- 1990
+  data <- dbGetQuery(ch,
+  #cat(
+  paste("select t1.poa_code, cast(year || '-' || month || '-' || day as date),
+  sum(t2.",wvar,"*(1/(t1.distances^2))) / sum(1/(t1.distances^2)) as ",wvar,"
+  from public.temp",state,"poa06stations as t1
+  join weather_bom.bom_daily_data_1990_2010 as t2
+  on t1.stnum=t2.station_number
+  where year = ",yy," and
+  (",qvar," = 'Y' or ",qvar," = 'N') and
+  ",wvar," is not null
+  group by t1.poa_code,
+  cast(year || '-' || month || '-' || day as date)
+  order by date;
+  ", sep="")
+  )
+  # str(data)
+  # names(table(data$poa_code))
+  ## with(data, plot(date, data[,wvar], type='l'))
+  ## head(data)
+  
+  # write out result to CSV
+  if(yy == 1990){
+  write.csv(data, paste('data/ding2012-',wvar,'-',state,'.csv',sep=""), row.names=F)
+  } else {
+  write.table(data,
+  paste('data/ding2012-',wvar,'-',state,'.csv',sep=""), sep = ',',
+  append = T, row.names=F, col.names = F)
+  }
+  
+  # a qc table
+  ## if(yy == 2009){
+  ## data$poa_code <- as.factor(data$poa_code)
+  ## data2 <- tapply(data[,wvar], data$poa_code, mean, na.rm = T)
+  ## data3 <- as.matrix(data2)
+  ## head(data3)
+  ## data3 <- as.data.frame(data3)
+  ## str(data3)
+  ## if(state == 'nsw'){
+  ## dbWriteTable(ch,paste("temppoa06",substr(wvar,1,20),sep=""),
+  ## data3)
+  ## } else {
+  ## dbWriteTable(ch,paste("temppoa06",substr(wvar,1,20),sep=""),
+  ## data3, append = T)
+  ## }
+  ## }
+  
+  }
+  # tidy
+  dbSendQuery(ch,
+  paste("drop table public.temp",state,"poa06stations",sep=""))
+  
+  }
+  }
+  
+  # quick visualisation of the 1990 annual average temperatures I made
+  # in the first loop
+  ## dbSendQuery(ch,
+  ## 'select t1.*, t2.the_geom
+  ## into public.temppoa06map
+  ## from temppoa06average_daily_temper t1
+  ## join abs_poa.auspoa06 t2
+  ## on t1."row.names" = t2.poa_2006;
+  ## alter table public.temppoa06map add column gid2 serial primary key;
+  ## ')
+  
+  #dbSendQuery(ch,"drop table temppoa06average_daily_temper;")
+  #dbSendQuery(ch,"drop table public.temppoa06map;")
+  
+#+end_src
+
+
+* Conclusion
+
+\section{References}
+\begin{thebibliography}{1}
+
+\bibitem{Hanigan2006}
+Ivan Hanigan, Gillian Hall, and Keith Dear.
+\newblock {A comparison of methods for calculating population exposure
+  estimates of daily weather for health research.}
+\newblock {\em International journal of health geographics}, 5(1):38, 2006.
+
+\bibitem{Hanigan2012d}
+Ivan~C. Hanigan.
+\newblock {POAweather. https://github.com/ivanhanigan/POAweather}, 2012.
+
+\bibitem{NationalClimateCentreoftheBureauofMeteorology2010}
+{National Climate Centre of the Bureau of Meteorology}.
+\newblock {\em {Daily or three hourly weather data for Bureau of Meteorology
+  stations.}}
+\newblock 700 Collins Street Docklands VIC 3008, AUSTRALIA;, 2010.
+
+\bibitem{AustralianBureauofStatistics2006}
+{Australian Bureau of Statistics}.
+\newblock {2923.0.30.001 - Census of Population and Housing: Census Geographic
+  Areas Digital Boundaries, Australia}.
+\newblock http://www.abs.gov.au/AUSSTATS/abs@.nsf/DetailsPage/2923.0.30.0012006?OpenDocument 2006.
+
+
+\end{thebibliography}
+
+* COMMENT generate the bib file using Sweave
+** TODO need to figure out how to do this in orgmode
+#+name:references.Rnw
+#+begin_src R :session *R* :tangle ../references/references.Rnw :exports none :eval no
+
+\documentclass[a4paper]{article}
+\title{POAweather references Bib}
+\author{Ivan Hanigan}
+\begin{document}
+\maketitle
+
+\setcounter{page}{1}
+\pagenumbering{roman}
+\tableofcontents 
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+\section{Method}
+The POAweather project is a data product from the original paper by Hanigan, Hall and Dear in 2006 \cite{Hanigan2006} which compared 5 simple methods for estimating exposure to weather variables for populations of small areas (postcodes).  The code is online at \cite{Hanigan2012d}.
+
+\section{Weather}
+The method is applied to the data from BoM \cite{NationalClimateCentreoftheBureauofMeteorology2010}
+
+\section{Postcodes}
+We use the Australian Bureau of Statistics (ABS) version of postcodes termed Postal Areas (POA) \cite{AustralianBureauofStatistics2006}.
+
+\bibliographystyle{unsrt}
+\bibliography{~/Dropbox/references/library.bib}
+
+\end{document}
+#+end_src
