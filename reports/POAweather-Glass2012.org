@@ -1,4 +1,4 @@
-#+TITLE:POAweather Ding 2012 
+#+TITLE:POAweather Glass 2012 
 #+AUTHOR: Ivan Hanigan
 #+email: ivan.hanigan@anu.edu.au
 #+LaTeX_CLASS: article
@@ -14,7 +14,7 @@
 #+end_src
 
 * Intro
-This is a data extraction from the POAweather project for Ning Ding, NCEPH staff member.
+This is a data extraction from the POAweather project for Katie Glass, NCEPH staff member.
 
 * This document is an executable script
 This document is produced from an R script that mixes computer code with narrative.
@@ -45,18 +45,18 @@ These data must only be used by projects that produce NCEPH output, i.e. authors
 * COMMENT The Codes
 ** main.r
 This file is used to run the load, clean, func and do modules.  It is found in the root of the project directory.
-#+name:main-ding2012.r
-#+begin_src R :session *R* :tangle ../main-ding2012.r :exports none :eval no
+#+name:main-glass2012.r
+#+begin_src R :session *R* :tangle ../main-glass2012.r :exports none :eval no
   ###########################################################################
-  # newnode: main-ding2012.r
+  # newnode: main-glass2012.r
   require(ProjectTemplate)
   load.project()
   dir()
   
   source('src/func.r')
   # instead of sourcing this file, open it view the prototype
-  # source('src/do-ding2012-prototype.r')
-  # source('src/do-ding2012-final-run.r')
+  # source('src/do-glass2012-prototype.r')
+  # source('src/do-glass2012-final-run.r')
   
 #+end_src
 
@@ -121,22 +121,16 @@ source('src/postIDW.r')
 ** do.r
 *** do-prototype.r
 #+name:do-prototype
-#+begin_src R :session *R* :tangle ../src/do-ding2012-prototype.r :exports none :eval no
+#+begin_src R :session *R* :tangle ../src/do-glass2012-prototype.r :exports none :eval no
   ###########################################################################
   # newnode: do-prototype
   postIDW(vname="average_daily_temperature_calculated_by_averaging_the_max_and_min_temperatures_in_degrees_c",
           param_name="avtemp")
   # this uses the geographic centroid.  subsequent final run uses pop weighted centre
-  dbSendQuery(ch,
-  "select nswpoa.poa_2006,
-     st_centroid(nswpoa.the_geom)
-  into public.tempnswpoa06
-  from  abs_poa.nswpoa06 nswpoa;
-  alter table public.tempnswpoa06 add column gid2 serial primary key;
-  
-  ALTER TABLE public.tempnswpoa06 ALTER COLUMN st_centroid SET NOT NULL;
-  CREATE INDEX name_for_index2 on public.tempnswpoa06 using GIST(st_centroid);
-  ALTER TABLE public.tempnswpoa06 CLUSTER ON name_for_index2;
+  dbGetQuery(ch,
+  "SELECT sd_code
+  FROM abs_sd.aussd01
+  limit 10
   ")
   
   # --drop table public.tempnswpoa06stations;
@@ -173,7 +167,7 @@ source('src/postIDW.r')
             order by date;
   ")
   with(data, plot(date, rain))
-
+  
   data2 <- dbGetQuery(ch,
   "select t1.poa_2006,t1.poa_2006, cast(year || '-' || month || '-' || day as date) , station_number,
   t2.precipitation_in_the_24_hours_before_9am_local_time_in_mm, quality_of_precipitation_value, distances
@@ -195,7 +189,7 @@ source('src/postIDW.r')
 #+end_src
 *** do-final-run
 #+name:do-final-run
-#+begin_src R :session *R* :tangle ../src/do-ding2012-final-run.r :exports none :eval no
+#+begin_src R :session *R* :tangle ../src/do-glass2012-final-run.r :exports none :eval no
   ###########################################################################
   # newnode: do-final-run
   # there is currently a problem with the NT (being fixed)
@@ -259,10 +253,10 @@ source('src/postIDW.r')
   
   # write out result to CSV
   if(yy == 1990){
-  write.csv(data, paste('data/ding2012-',wvar,'-',state,'.csv',sep=""), row.names=F)
+  write.csv(data, paste('data/glass2012-',wvar,'-',state,'.csv',sep=""), row.names=F)
   } else {
   write.table(data,
-  paste('data/ding2012-',wvar,'-',state,'.csv',sep=""), sep = ',',
+  paste('data/glass2012-',wvar,'-',state,'.csv',sep=""), sep = ',',
   append = T, row.names=F, col.names = F)
   }
   
